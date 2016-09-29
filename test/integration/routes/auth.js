@@ -1,20 +1,12 @@
+import codes from '../../../src/lib/error-codes'
 import migrationItems from '../../../src/migrations/auth'
 import Migrations from 'structure-migrations'
 import MockHTTPServer from '../../helpers/mock-http-server'
-import plugins from '../../helpers/plugins'
+import pluginsList from '../../helpers/plugins'
 import r from '../../helpers/driver'
 import RootModel from 'structure-root-model'
 
 Migrations.prototype.r = r
-
-const items = {
-  tables: plugins.migrations.concat([
-    {
-      action: 'create',
-      table: 'actions'
-    }
-  ])
-}
 
 describe('Routes', function() {
 
@@ -22,7 +14,7 @@ describe('Routes', function() {
 
     this.migration = new Migrations({
       db: 'test',
-      items
+      plugins: pluginsList
     })
 
     return this.migration.process()
@@ -45,6 +37,7 @@ describe('Routes', function() {
       .send(pkg)
 
     expect(res.body.status).to.equal(400)
+    //expect(res.body.err.code).to.equal(codes.BAD_DATA)
 
   })
 
@@ -60,6 +53,7 @@ describe('Routes', function() {
       .send(pkg)
 
     expect(res.body.status).to.equal(400)
+    //expect(res.body.err.code).to.equal(codes.NO_USER)
 
   })
 
@@ -82,6 +76,7 @@ describe('Routes', function() {
       })
 
     expect(res.body.status).to.equal(400)
+    //expect(res.body.err.code).to.equal(codes.PASSWORD_MISMATCH)
 
   })
 
@@ -105,6 +100,7 @@ describe('Routes', function() {
       })
 
     expect(res.body.status).to.equal(400)
+    //expect(res.body.err.code).to.equal(codes.BAD_ORGANIZATION)
 
   })
 
@@ -136,6 +132,7 @@ describe('Routes', function() {
       })
 
     expect(res.body.status).to.equal(400)
+    //expect(res.body.err.code).to.equal(codes.BAD_APPLICATION)
 
   })
 
@@ -178,6 +175,7 @@ describe('Routes', function() {
       })
 
     expect(res.body.status).to.equal(400)
+    //expect(res.body.err.code).to.equal(codes.BAD_APPLICATION)
 
   })
 

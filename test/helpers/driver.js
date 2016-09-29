@@ -1,5 +1,5 @@
 var r = require('rethinkdbdash')({
-  port: 28016,
+  port: process.env.RETHINK_DB_PORT,
   timeoutGb: 1000
 })
 
