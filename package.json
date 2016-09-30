@@ -1,18 +1,20 @@
 {
   "name": "structure-auth",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Authentication & authorization, cause no one likes to share yet everyone wants to be in charge",
   "main": "dist/index.js",
   "dependencies": {
     "babel-polyfill": "^6.16.0",
     "babel-runtime": "^6.11.6",
     "express": "^4.14.0",
-    "structure-applications": "0.0.6",
+    "structure-applications": "0.0.8",
     "structure-dispatcher": "0.0.7",
-    "structure-organizations": "0.0.7",
+    "structure-organizations": "0.0.8",
     "structure-password-service": "0.0.1",
+    "structure-root-controller": "0.0.3",
+    "structure-root-model": "0.0.4",
     "structure-token-service": "0.0.1",
-    "structure-users": "0.0.9"
+    "structure-users": "0.0.11"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
@@ -37,9 +39,7 @@
     "sinon-chai": "^2.8.0",
     "structure-migrations": "0.0.6",
     "structure-plugins": "0.0.15",
-    "structure-root-controller": "0.0.3",
-    "structure-root-model": "0.0.3",
-    "structure-router": "0.0.3",
+    "structure-router": "0.0.4",
     "structure-server": "0.0.6",
     "structure-test-helpers": "0.0.3",
     "supertest": "^2.0.0",
