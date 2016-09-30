@@ -1,6 +1,6 @@
 {
   "name": "structure-auth",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "Authentication & authorization, cause no one likes to share yet everyone wants to be in charge",
   "main": "dist/index.js",
   "dependencies": {
@@ -9,10 +9,10 @@
     "express": "^4.14.0",
     "structure-applications": "0.0.8",
     "structure-dispatcher": "0.0.7",
-    "structure-organizations": "0.0.8",
+    "structure-organizations": "0.0.9",
     "structure-password-service": "0.0.1",
     "structure-root-controller": "0.0.3",
-    "structure-root-model": "0.0.4",
+    "structure-root-model": "0.0.5",
     "structure-token-service": "0.0.1",
     "structure-users": "0.0.11"
   },
@@ -38,7 +38,7 @@
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
     "structure-migrations": "0.0.6",
-    "structure-plugins": "0.0.15",
+    "structure-plugins": "0.0.16",
     "structure-router": "0.0.4",
     "structure-server": "0.0.6",
     "structure-test-helpers": "0.0.3",
