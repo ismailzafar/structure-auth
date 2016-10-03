@@ -1,6 +1,6 @@
 {
   "name": "structure-auth",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Authentication & authorization, cause no one likes to share yet everyone wants to be in charge",
   "main": "dist/index.js",
   "dependencies": {
@@ -9,12 +9,13 @@
     "express": "^4.14.0",
     "structure-applications": "0.0.8",
     "structure-dispatcher": "0.0.7",
-    "structure-organizations": "0.0.9",
+    "structure-groups": "0.0.9",
+    "structure-organizations": "0.0.10",
     "structure-password-service": "0.0.1",
     "structure-root-controller": "0.0.3",
-    "structure-root-model": "0.0.5",
+    "structure-root-model": "0.0.9",
     "structure-token-service": "0.0.1",
-    "structure-users": "0.0.11"
+    "structure-users": "0.0.16"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
@@ -37,10 +38,10 @@
     "rethinkdbdash": "^2.3.23",
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
-    "structure-migrations": "0.0.6",
-    "structure-plugins": "0.0.16",
+    "structure-migrations": "0.0.7",
+    "structure-plugins": "0.0.21",
     "structure-router": "0.0.4",
-    "structure-server": "0.0.6",
+    "structure-server": "0.0.7",
     "structure-test-helpers": "0.0.3",
     "supertest": "^2.0.0",
     "supertest-as-promised": "^4.0.0"
@@ -50,7 +51,7 @@
     "prepublish": "npm run compile",
     "start-reqlite": "node_modules/forever/bin/forever start node_modules/reqlite/lib/node.js --port-offset 1 -s",
     "stop-reqlite": "node_modules/forever/bin/forever stop node_modules/reqlite/lib/node.js --port-offset 1 -s",
-    "test": "export NODE_ENV=test && gulp stop-reqlite && npm run start-reqlite && gulp t && npm run stop-reqlite",
+    "test": "export NODE_ENV=test && gulp stop-reqlite && npm run start-reqlite && gulp t && gulp stop-reqlite",
     "test:debug": "export LOG_LEVEL=debug && npm test"
   },
   "repository": {

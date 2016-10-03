@@ -1,16 +1,16 @@
 import codes from '../../../src/lib/error-codes'
-import migrationItems from '../../../src/migrations/auth'
 import Migrations from 'structure-migrations'
 import MockHTTPServer from '../../helpers/mock-http-server'
 import pluginsList from '../../helpers/plugins'
 import r from '../../helpers/driver'
-import RootModel from 'structure-root-model'
 
 Migrations.prototype.r = r
 
+const server = new MockHTTPServer()
+
 describe('Routes', function() {
 
-  beforeEach(function() {
+  before(function() {
 
     this.migration = new Migrations({
       db: 'test',
@@ -32,7 +32,7 @@ describe('Routes', function() {
       password: 'forgotmywolf'
     }
 
-    var res = await new MockHTTPServer()
+    var res = await server
       .post(`/api/${process.env.API_VERSION}/auth/login`)
       .send(pkg)
 
@@ -48,7 +48,7 @@ describe('Routes', function() {
       password: 'forgotmywolf'
     }
 
-    var res = await new MockHTTPServer()
+    var res = await server
       .post(`/api/${process.env.API_VERSION}/auth/login`)
       .send(pkg)
 
@@ -59,7 +59,7 @@ describe('Routes', function() {
 
   it('should not login a user; bad password', async function() {
 
-    var res0 = await new MockHTTPServer()
+    var res0 = await server
       .post(`/api/${process.env.API_VERSION}/users`)
       .send({
         email: 'mail1234@foo.com',
@@ -68,7 +68,7 @@ describe('Routes', function() {
       })
     const user = res0.body.pkg
 
-    var res = await new MockHTTPServer()
+    var res = await server
       .post(`/api/${process.env.API_VERSION}/auth/login`)
       .send({
         username: 'tom1234335599',
@@ -82,7 +82,7 @@ describe('Routes', function() {
 
   it('should not login a user; missing organization', async function() {
 
-    var res0 = await new MockHTTPServer()
+    var res0 = await server
       .post(`/api/${process.env.API_VERSION}/users`)
       .send({
         email: 'mail1235@foo.com',
@@ -91,7 +91,7 @@ describe('Routes', function() {
       })
     const user = res0.body.pkg
 
-    var res = await new MockHTTPServer()
+    var res = await server
       .post(`/api/${process.env.API_VERSION}/auth/login`)
       .send({
         organizationId: 1,
@@ -106,7 +106,7 @@ describe('Routes', function() {
 
   it('should not login a user; missing application', async function() {
 
-    var org = await new MockHTTPServer()
+    var org = await server
       .post(`/api/${process.env.API_VERSION}/organizations`)
       .send({
         title: 'Pizza Hut',
@@ -114,7 +114,7 @@ describe('Routes', function() {
       })
     org = org.body.pkg
 
-    var res0 = await new MockHTTPServer()
+    var res0 = await server
       .post(`/api/${process.env.API_VERSION}/users`)
       .send({
         email: 'mail1236@foo.com',
@@ -123,7 +123,7 @@ describe('Routes', function() {
       })
     const user = res0.body.pkg
 
-    var res = await new MockHTTPServer()
+    var res = await server
       .post(`/api/${process.env.API_VERSION}/auth/login`)
       .send({
         organizationId: org.id,
@@ -138,7 +138,7 @@ describe('Routes', function() {
 
   it('should not login; missing application secret', async function() {
 
-    var org = await new MockHTTPServer()
+    var org = await server
       .post(`/api/${process.env.API_VERSION}/organizations`)
       .send({
         title: 'Pizza Hut',
@@ -146,7 +146,7 @@ describe('Routes', function() {
       })
     org = org.body.pkg
 
-    var app = await new MockHTTPServer()
+    var app = await server
       .post(`/api/${process.env.API_VERSION}/applications`)
       .send({
         title: 'Pizza ToGoGo',
@@ -155,7 +155,7 @@ describe('Routes', function() {
       })
     app = app.body.pkg
 
-    var res0 = await new MockHTTPServer()
+    var res0 = await server
       .post(`/api/${process.env.API_VERSION}/users`)
       .send({
         email: 'mail1237@foo.com',
@@ -165,7 +165,7 @@ describe('Routes', function() {
       })
     const user = res0.body.pkg
 
-    var res = await new MockHTTPServer()
+    var res = await server
       .post(`/api/${process.env.API_VERSION}/auth/login`)
       .send({
         applicationId: app.id,
@@ -181,7 +181,7 @@ describe('Routes', function() {
 
   it('should login a user with username', async function() {
 
-    var org = await new MockHTTPServer()
+    var org = await server
       .post(`/api/${process.env.API_VERSION}/organizations`)
       .send({
         title: 'Pizza Hut',
@@ -189,7 +189,7 @@ describe('Routes', function() {
       })
     org = org.body.pkg
 
-    var app = await new MockHTTPServer()
+    var app = await server
       .post(`/api/${process.env.API_VERSION}/applications`)
       .send({
         title: 'Pizza ToGoGo',
@@ -198,7 +198,7 @@ describe('Routes', function() {
       })
     app = app.body.pkg
 
-    var res0 = await new MockHTTPServer()
+    var res0 = await server
       .post(`/api/${process.env.API_VERSION}/users`)
       .send({
         email: 'mail1238@foo.com',
@@ -208,7 +208,7 @@ describe('Routes', function() {
       })
     const user = res0.body.pkg
 
-    var res = await new MockHTTPServer()
+    var res = await server
       .post(`/api/${process.env.API_VERSION}/auth/login`)
       .send({
         applicationId: app.id,
@@ -225,7 +225,7 @@ describe('Routes', function() {
 
   it('should login a user with email', async function() {
 
-    var org = await new MockHTTPServer()
+    var org = await server
       .post(`/api/${process.env.API_VERSION}/organizations`)
       .send({
         title: 'Pizza Hut',
@@ -233,7 +233,7 @@ describe('Routes', function() {
       })
     org = org.body.pkg
 
-    var app = await new MockHTTPServer()
+    var app = await server
       .post(`/api/${process.env.API_VERSION}/applications`)
       .send({
         title: 'Pizza ToGoGo',
@@ -242,7 +242,7 @@ describe('Routes', function() {
       })
     app = app.body.pkg
 
-    var res0 = await new MockHTTPServer()
+    var res0 = await server
       .post(`/api/${process.env.API_VERSION}/users`)
       .send({
         email: 'mail231239@foo.com',
@@ -252,7 +252,7 @@ describe('Routes', function() {
       })
     const user = res0.body.pkg
 
-    var res = await new MockHTTPServer()
+    var res = await server
       .post(`/api/${process.env.API_VERSION}/auth/login`)
       .send({
         applicationId: app.id,
@@ -264,6 +264,55 @@ describe('Routes', function() {
 
     //expect(res.body.status).to.equal(200)
     expect(res.body.pkg.username).to.equal('tom12391355912')
+
+  })
+
+  it('should not login a deleted user', async function() {
+
+    var org = await server
+      .post(`/api/${process.env.API_VERSION}/organizations`)
+      .send({
+        title: 'Pizza Hut',
+        desc: 'We dont have a hut though'
+      })
+    org = org.body.pkg
+
+    var app = await server
+      .post(`/api/${process.env.API_VERSION}/applications`)
+      .send({
+        title: 'Pizza ToGoGo',
+        desc: 'We dont have a hut but we have dough',
+        organizationId: org.id
+      })
+    app = app.body.pkg
+
+    var res0 = await server
+      .post(`/api/${process.env.API_VERSION}/users`)
+      .send({
+        email: 'mail231239@foo.com',
+        username: 'tom12391355912',
+        password: 'gonnacatchyou22',
+        organizationId: org.id
+      })
+
+    const user = res0.body.pkg
+
+    await server
+      .delete(`/api/${process.env.API_VERSION}/users/${user.id}`)
+      .send()
+
+    var res = await server
+      .post(`/api/${process.env.API_VERSION}/auth/login`)
+      .send({
+        applicationId: app.id,
+        applicationSecret: app.secret,
+        organizationId: org.id,
+        email: 'mail231239@foo.com',
+        password: 'gonnacatchyou22'
+      })
+
+    //expect(res.body.err.code).to.equal(codes.NO_USER)
+    expect(res.body.status).to.equal(400)
 
   })
 
