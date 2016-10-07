@@ -316,4 +316,221 @@ describe('Routes', function() {
 
   })
 
+  it('should not reset password; missing old password', async function() {
+
+    var org = await server
+      .post(`/api/${process.env.API_VERSION}/organizations`)
+      .send({
+        title: 'Pizza Hut',
+        desc: 'We dont have a hut though'
+      })
+    org = org.body.pkg
+
+    var app = await server
+      .post(`/api/${process.env.API_VERSION}/applications`)
+      .send({
+        title: 'Pizza ToGoGo',
+        desc: 'We dont have a hut but we have dough',
+        organizationId: org.id
+      })
+    app = app.body.pkg
+
+    var res0 = await server
+      .post(`/api/${process.env.API_VERSION}/users`)
+      .send({
+        email: 'mail231239@foo.com',
+        username: 'tom12391355912',
+        password: 'gonnacatchyou22',
+        organizationId: org.id
+      })
+    const user = res0.body.pkg
+
+    var res = await server
+      .patch(`/api/${process.env.API_VERSION}/auth/users/${user.id}/password`)
+      .send({
+        applicationId: app.id,
+        applicationSecret: app.secret,
+        organizationId: org.id,
+        email: 'mail231239@foo.com',
+        newPassword: 'gonnacatchyou23'
+      })
+
+    expect(res.body.status).to.equal(400)
+
+  })
+
+  it('should not reset password; missing new password', async function() {
+
+    var org = await server
+      .post(`/api/${process.env.API_VERSION}/organizations`)
+      .send({
+        title: 'Pizza Hut',
+        desc: 'We dont have a hut though'
+      })
+    org = org.body.pkg
+
+    var app = await server
+      .post(`/api/${process.env.API_VERSION}/applications`)
+      .send({
+        title: 'Pizza ToGoGo',
+        desc: 'We dont have a hut but we have dough',
+        organizationId: org.id
+      })
+    app = app.body.pkg
+
+    var res0 = await server
+      .post(`/api/${process.env.API_VERSION}/users`)
+      .send({
+        email: 'mail231239@foo.com',
+        username: 'tom12391355912',
+        password: 'gonnacatchyou22',
+        organizationId: org.id
+      })
+    const user = res0.body.pkg
+
+    var res = await server
+      .patch(`/api/${process.env.API_VERSION}/auth/users/${user.id}/password`)
+      .send({
+        applicationId: app.id,
+        applicationSecret: app.secret,
+        organizationId: org.id,
+        email: 'mail231239@foo.com',
+        oldPassword: 'gonnacatchyou22'
+      })
+
+    expect(res.body.status).to.equal(400)
+
+  })
+
+  it('should not reset password; password property not allowed', async function() {
+
+    var org = await server
+      .post(`/api/${process.env.API_VERSION}/organizations`)
+      .send({
+        title: 'Pizza Hut',
+        desc: 'We dont have a hut though'
+      })
+    org = org.body.pkg
+
+    var app = await server
+      .post(`/api/${process.env.API_VERSION}/applications`)
+      .send({
+        title: 'Pizza ToGoGo',
+        desc: 'We dont have a hut but we have dough',
+        organizationId: org.id
+      })
+    app = app.body.pkg
+
+    var res0 = await server
+      .post(`/api/${process.env.API_VERSION}/users`)
+      .send({
+        email: 'mail231239@foo.com',
+        username: 'tom12391355912',
+        password: 'gonnacatchyou22',
+        organizationId: org.id
+      })
+    const user = res0.body.pkg
+
+    var res = await server
+      .patch(`/api/${process.env.API_VERSION}/auth/users/${user.id}/password`)
+      .send({
+        applicationId: app.id,
+        applicationSecret: app.secret,
+        organizationId: org.id,
+        email: 'mail231239@foo.com',
+        password: 'gonnacatchyou22'
+      })
+
+    expect(res.body.status).to.equal(400)
+
+  })
+
+  it('should not reset password; old password incorrect', async function() {
+
+    var org = await server
+      .post(`/api/${process.env.API_VERSION}/organizations`)
+      .send({
+        title: 'Pizza Hut',
+        desc: 'We dont have a hut though'
+      })
+    org = org.body.pkg
+
+    var app = await server
+      .post(`/api/${process.env.API_VERSION}/applications`)
+      .send({
+        title: 'Pizza ToGoGo',
+        desc: 'We dont have a hut but we have dough',
+        organizationId: org.id
+      })
+    app = app.body.pkg
+
+    var res0 = await server
+      .post(`/api/${process.env.API_VERSION}/users`)
+      .send({
+        email: 'mail231239@foo.com',
+        username: 'tom12391355912',
+        password: 'gonnacatchyou22',
+        organizationId: org.id
+      })
+    const user = res0.body.pkg
+
+    var res = await server
+      .patch(`/api/${process.env.API_VERSION}/auth/users/${user.id}/password`)
+      .send({
+        applicationId: app.id,
+        applicationSecret: app.secret,
+        organizationId: org.id,
+        email: 'mail231239@foo.com',
+        oldPassword: 'gonnacatchyou23',
+        newPassword: 'gonnacatchyou23'
+      })
+
+    expect(res.body.status).to.equal(400)
+
+  })
+
+  it('should reset password', async function() {
+
+    var org = await server
+      .post(`/api/${process.env.API_VERSION}/organizations`)
+      .send({
+        title: 'Pizza Hut',
+        desc: 'We dont have a hut though'
+      })
+    org = org.body.pkg
+
+    var app = await server
+      .post(`/api/${process.env.API_VERSION}/applications`)
+      .send({
+        title: 'Pizza ToGoGo',
+        desc: 'We dont have a hut but we have dough',
+        organizationId: org.id
+      })
+    app = app.body.pkg
+
+    var res0 = await server
+      .post(`/api/${process.env.API_VERSION}/users`)
+      .send({
+        email: 'mail231239@foo.com',
+        username: 'tom12391355912',
+        password: 'gonnacatchyou22',
+        organizationId: org.id
+      })
+    const user = res0.body.pkg
+
+    var res = await server
+      .patch(`/api/${process.env.API_VERSION}/auth/users/${user.id}/password`)
+      .send({
+        applicationId: app.id,
+        applicationSecret: app.secret,
+        organizationId: org.id,
+        email: 'mail231239@foo.com',
+        oldPassword: 'gonnacatchyou22',
+        newPassword: 'gonnacatchyou23'
+      })
+
+    expect(res.body.status).to.equal(200)
+
+  })
+
 })

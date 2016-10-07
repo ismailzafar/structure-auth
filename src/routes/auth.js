@@ -10,6 +10,7 @@ export default function routeInterface(props = {}) {
   const controller = new Controller()
 
   routes.post(`/login`, dispatch(controller, 'login'))
+  routes.patch('/users/:id/password', dispatch(controller, 'changePassword'))
 
   return {
     routeName: 'auth',

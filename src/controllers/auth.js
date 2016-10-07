@@ -22,26 +22,92 @@ const UserModel = userResources.models.User
  */
 export default class AuthController extends RootController {
 
- /**
-  * AuthController constructor
-  *
-  * @public
-  * @constructor
-  * @param {Object} options - Options
-  */
+  /**
+   * AuthController constructor
+   *
+   * @public
+   * @constructor
+   * @param {Object} options - Options
+   */
   constructor(options = {}) {
-   super(Object.assign({}, {
-     name: 'auth'
-   }, options))
+    super(Object.assign({}, {
+      name: 'auth'
+    }, options))
   }
 
- /**
-  * Login a user
-  *
-  * @public
-  * @param {Object} req - Express req
-  * @param {Object} res - Express res
-  */
+  /**
+   * Change password for user
+   *
+   * @public
+   * @param {Object} req - Express req
+   * @param {Object} res - Express res
+   */
+  changePassword(req, res) {
+
+    let pkg = req.body
+    const id = req.params.id
+    const userModel = new UserModel()
+
+    return new Promise( async (resolve, reject) => {
+
+      try {
+        const oldPassword = Object.assign({}, pkg).oldPassword
+        const newPassword = Object.assign({}, pkg).newPassword
+
+        if(pkg.password) {
+          throw new Error({
+            code: codes.MISSING_PASSWORDS,
+            message: 'password property not allowed. Please use oldPassword and newPassword'
+          })
+        }
+
+        if(!oldPassword || !newPassword) {
+          throw new Error({
+            code: codes.MISSING_PASSWORDS,
+            message: 'Need oldPassword and newPassword properties'
+          })
+        }
+
+        delete pkg.oldPassword
+        delete pkg.newPassword
+
+        // Validate old password
+        const reqBodyWithOldPassword = Object.assign({}, req.body, {password: oldPassword})
+        const reqWithOldPassword = Object.assign({}, req, {body: reqBodyWithOldPassword})
+
+        let user = await this.login(reqWithOldPassword, res)
+
+        // Create new password hash
+        pkg.hash = await new PasswordService().issue(newPassword)
+        delete pkg.password
+
+        user = await userModel.updateById(id, pkg)
+
+        // Auth new user
+        const reqBodyWithNewPassword = Object.assign({}, req.body, {password: newPassword})
+        const reqWithNewPassword = Object.assign({}, req, {body: reqBodyWithNewPassword})
+
+        user = user = await this.login(reqWithNewPassword, res)
+
+        resolve(user)
+      }
+      catch(e) {
+        logger.error(e)
+
+        reject(e)
+      }
+
+    })
+
+  }
+
+  /**
+   * Login a user
+   *
+   * @public
+   * @param {Object} req - Express req
+   * @param {Object} res - Express res
+   */
   login(req, res) {
 
     const appModel = new AppModel()
@@ -153,6 +219,7 @@ export default class AuthController extends RootController {
         model = new RootModel({table: 'actions'})
 
         model.create(data)*/
+        logger.error(e)
 
         logger.debug('Auth: Bad data package')
 
