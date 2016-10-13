@@ -20,13 +20,6 @@ export default class AuthModel extends RootModel {
     super(Object.assign({}, {
       table: 'auth',
 
-      permissions: {
-        create:  ['user', 'admin'],
-        delete:  ['admin'],
-        read:    ['organization', 'admin'],
-        replace: ['admin'],
-        update:  ['admin'],
-      },
       relations: {
         belongsTo: [
           {

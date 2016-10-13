@@ -128,26 +128,6 @@ export default class AuthController extends RootController {
           user = await userModel.getByEmail(pkg.email)
         }
 
-        if(!user) {
-          /*model = new RootModel({table: 'actions'})
-
-          model.create({
-            authenticated: false,
-            err: 'NO_USER',
-            username: pkg.username
-          })*/
-
-          logger.debug('NO USER')
-
-          return reject({
-            err: {
-              code: codes.NO_USER,
-              message: 'Could not get user: ' + (pkg.username || pkg.email),
-              resource: 'AuthModel'
-            }
-          })
-        }
-
         /*
         Make sure:
         @note Users do not actually belong to apps, but to organizations. However, users should
@@ -162,7 +142,6 @@ export default class AuthController extends RootController {
         */
         var res = await Promise
           .all([
-            orgModel.getById(pkg.organizationId),
             this.validateAppSecret(pkg.applicationId, pkg.applicationSecret),
             r.table('link_organizations_applications').filter({
               applicationId: pkg.applicationId,
@@ -185,14 +164,13 @@ export default class AuthController extends RootController {
             new TokenService().issue(`${pkg.organizationId}${Date.now()}${user.id}`)
           ])
 
-        const app   = res[1]
-        const org   = res[0]
-        const token = res[5]
+        const app   = res[0]
+        const token = res[4]
 
         auth.login({
           applicationId: app.id,
           email: user.email,
-          organizationId: org.id,
+          organizationId: pkg.organizationId,
           //token,
           userId: user.id,
           username: user.username
@@ -224,11 +202,9 @@ export default class AuthController extends RootController {
         logger.debug('Auth: Bad data package')
 
         return reject({
-          err: {
-            code: codes.BAD_DATA,
-            message: 'Bad data package',
-            resource: 'AuthModel'
-          }
+          code: codes.BAD_DATA,
+          message: 'Bad data package',
+          resource: 'AuthController'
         })
       }
 

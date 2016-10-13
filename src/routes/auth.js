@@ -5,12 +5,14 @@ const dispatch = new Dispatcher().dispatch
 const express = require('express')
 const routes = express.Router()
 
+const controller = new Controller()
+import schemaChangePassword from '../schemas/changePassword'
+import schemaLogin from '../schemas/login'
+
+routes.post(`/login`, schemaLogin, dispatch(controller, 'login'))
+routes.patch('/users/:id/password', schemaChangePassword, dispatch(controller, 'changePassword'))
+
 export default function routeInterface(props = {}) {
-
-  const controller = new Controller()
-
-  routes.post(`/login`, dispatch(controller, 'login'))
-  routes.patch('/users/:id/password', dispatch(controller, 'changePassword'))
 
   return {
     routeName: 'auth',

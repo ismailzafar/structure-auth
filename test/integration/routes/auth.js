@@ -37,7 +37,7 @@ describe('Routes', function() {
       .send(pkg)
 
     expect(res.body.status).to.equal(400)
-    //expect(res.body.err.code).to.equal(codes.BAD_DATA)
+    expect(res.body.err.code).to.equal(codes.MISSING_APPLICATIONID)
 
   })
 
