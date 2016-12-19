@@ -4,14 +4,15 @@ import AuthModel from '../models/auth'
 import logger from 'structure-logger'
 import {resources as organizationResources} from 'structure-organizations'
 import PasswordService from 'structure-password-service'
+import r from 'structure-driver'
 import RootController from 'structure-root-controller'
 import RootModel from 'structure-root-model'
+import {sendEmail} from 'structure-emails'
 import TokenService from 'structure-token-service'
 import {resources as userResources} from 'structure-users'
 
 const AppModel = applicationResources.models.Application
 const OrgModel = organizationResources.models.Organization
-const r = new RootModel({table: 'root'}).r
 const UserModel = userResources.models.User
 
 /**
@@ -207,6 +208,25 @@ export default class AuthController extends RootController {
           resource: 'AuthController'
         })
       }
+
+    })
+
+  }
+
+  passwordResetRequest(req, res) {
+
+    const email = req.params.email
+
+    return new Promise( async (resolve, reject) => {
+
+      sendEmail({
+        from: process.env.EMAIL_FROM,
+        //to: email,
+        to: 'mail@chrisabrams.com',
+        subject: 'Password Reset Request',
+        text: `You have requested to reset your password. Please click here: .`,
+        html: `You have requested to reset your password. Please click <a href="">here</a>.`
+      })
 
     })
 

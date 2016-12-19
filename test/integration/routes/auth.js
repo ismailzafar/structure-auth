@@ -2,9 +2,6 @@ import codes from '../../../src/lib/error-codes'
 import Migrations from 'structure-migrations'
 import MockHTTPServer from '../../helpers/mock-http-server'
 import pluginsList from '../../helpers/plugins'
-import r from '../../helpers/driver'
-
-Migrations.prototype.r = r
 
 const server = new MockHTTPServer()
 
@@ -316,7 +313,7 @@ describe('Routes', function() {
 
   })
 
-  it('should not reset password; missing old password', async function() {
+  it('should not change password; missing old password', async function() {
 
     var org = await server
       .post(`/api/${process.env.API_VERSION}/organizations`)
@@ -359,7 +356,7 @@ describe('Routes', function() {
 
   })
 
-  it('should not reset password; missing new password', async function() {
+  it('should not change password; missing new password', async function() {
 
     var org = await server
       .post(`/api/${process.env.API_VERSION}/organizations`)
@@ -402,7 +399,7 @@ describe('Routes', function() {
 
   })
 
-  it('should not reset password; password property not allowed', async function() {
+  it('should not change password; password property not allowed', async function() {
 
     var org = await server
       .post(`/api/${process.env.API_VERSION}/organizations`)
@@ -445,7 +442,7 @@ describe('Routes', function() {
 
   })
 
-  it('should not reset password; old password incorrect', async function() {
+  it('should not change password; old password incorrect', async function() {
 
     var org = await server
       .post(`/api/${process.env.API_VERSION}/organizations`)
@@ -489,7 +486,7 @@ describe('Routes', function() {
 
   })
 
-  it('should reset password', async function() {
+  it('should change password', async function() {
 
     var org = await server
       .post(`/api/${process.env.API_VERSION}/organizations`)
@@ -528,6 +525,46 @@ describe('Routes', function() {
         oldPassword: 'gonnacatchyou22',
         newPassword: 'gonnacatchyou23'
       })
+
+    expect(res.body.status).to.equal(200)
+
+  })
+
+  it.skip('should reset password', async function() {
+    this.timeout(5000)
+
+    var org = await server
+      .post(`/api/${process.env.API_VERSION}/organizations`)
+      .send({
+        title: 'Pizza Hut',
+        desc: 'We dont have a hut though'
+      })
+    org = org.body.pkg
+
+    var app = await server
+      .post(`/api/${process.env.API_VERSION}/applications`)
+      .send({
+        title: 'Pizza ToGoGo',
+        desc: 'We dont have a hut but we have dough',
+        organizationId: org.id
+      })
+    app = app.body.pkg
+
+    var res0 = await server
+      .post(`/api/${process.env.API_VERSION}/users`)
+      .send({
+        email: 'mail231239@foo.com',
+        username: 'tom12391355912',
+        password: 'gonnacatchyou22',
+        organizationId: org.id
+      })
+    const user = res0.body.pkg
+
+    var res = await server
+      .post(`/api/${process.env.API_VERSION}/auth/users/${user.email}/password/reset`)
+      .send()
+
+    console.error('res.body', res.body, res.error)
 
     expect(res.body.status).to.equal(200)
 

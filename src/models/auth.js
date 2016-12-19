@@ -1,4 +1,5 @@
 import logger from 'structure-logger'
+import r from 'structure-driver'
 import RootModel from 'structure-root-model'
 
 /**
@@ -23,7 +24,6 @@ export default class AuthModel extends RootModel {
       relations: {
         belongsTo: [
           {
-            Node: 'User',
             foreignKey: 'id',
             localField: 'user',
             localKey: 'userId'
@@ -75,7 +75,7 @@ export default class AuthModel extends RootModel {
 
     return new Promise( async (resolve, reject) => {
 
-      const matches = await this.r.table('auth_tokens').filter({
+      const matches = await r.table('auth_tokens').filter({
         organizationId: pkg.organizationId,
         token: pkg.token,
         userId: pkg.userId
@@ -135,7 +135,7 @@ export default class AuthModel extends RootModel {
     console.error('handle args', pkg)
     return new Promise( (resolve, reject) => {
 
-      this.r.db(process.env.RETHINK_DB_NAME)
+      r.db(process.env.RETHINK_DB_NAME)
         .table('users')
         .filter({
           strategies: {
