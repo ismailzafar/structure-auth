@@ -71,34 +71,12 @@ ajv.addKeyword('no_username', {
   }
 })
 
-ajv.addKeyword('no_organization', {
-  compile: function checkOrganizationExists(sch, parentSchema) {
-
-    return async function(data) {
-
-      const res = orgModel.getById(data)
-
-    }
-
-  }
-})
-
 const schema = {
   "$async": true,
   "properties": {
-    "applicationId": {
-      "type": "string"
-    },
-    "applicationSecret": {
-      "type": "string"
-    },
     "email": {
       "no_email": {},
       "format": "email",
-      "type": "string"
-    },
-    "organizationId": {
-      "no_organization": {},
       "type": "string"
     },
     "newPassword": {
@@ -112,7 +90,7 @@ const schema = {
       "type": "string"
     }
   },
-  "required": ['applicationId', 'applicationSecret', 'organizationId', 'newPassword', 'oldPassword']
+  "required": ['newPassword', 'oldPassword']
 }
 
 const validate = ajv.compile(schema)

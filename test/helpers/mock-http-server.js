@@ -1,7 +1,7 @@
-import Dispatcher from 'structure-dispatcher'
-import pluginsList from './plugins'
+import middleware from './middleware'
 import pluginsInteface from 'structure-plugins'
-import request from 'supertest-as-promised'
+import pluginsList from './plugins'
+import request from 'supertest'
 import Router from 'structure-router'
 import Server from 'structure-server'
 
@@ -13,7 +13,7 @@ function MockHTTPServer(options = {}) {
 
   const api = new Server({
     router: new Router({
-      dispatcher: new Dispatcher(),
+      middleware,
       routes: plugins.routes
     })
   })

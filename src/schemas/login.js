@@ -54,7 +54,7 @@ ajv.addKeyword('no_email', {
   }
 })
 
-ajv.addKeyword('no_username', {
+ajv.addKeyword('missing_username', {
   async: true,
   type: 'string',
   compile: function checkDuplicateUsername(sch, parentSchema) {
@@ -71,45 +71,23 @@ ajv.addKeyword('no_username', {
   }
 })
 
-ajv.addKeyword('no_organization', {
-  compile: function checkOrganizationExists(sch, parentSchema) {
-
-    return async function(data) {
-
-      const res = orgModel.getById(data)
-
-    }
-
-  }
-})
-
 const schema = {
   "$async": true,
   "properties": {
-    "applicationId": {
-      "type": "string"
-    },
-    "applicationSecret": {
-      "type": "string"
-    },
     "email": {
       "no_email": {},
       "format": "email",
-      "type": "string"
-    },
-    "organizationId": {
-      "no_organization": {},
       "type": "string"
     },
     "password": {
       "type": "string"
     },
     "username": {
-      "no_username": {},
+      "missing_username": {},
       "type": "string"
     }
   },
-  "required": ['applicationId', 'applicationSecret', 'organizationId', 'password']
+  "required": ['password']
 }
 
 const validate = ajv.compile(schema)

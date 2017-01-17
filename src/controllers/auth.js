@@ -111,9 +111,11 @@ export default class AuthController extends RootController {
    */
   login(req, res) {
 
+    const applicationId = req.headers.applicationid
     const appModel = new AppModel()
     const auth = new AuthModel()
     let   model = null
+    const organizationId = req.headers.organizationid
     const orgModel = new OrgModel()
     const pkg = req.body
     const userModel = new UserModel()
@@ -143,13 +145,14 @@ export default class AuthController extends RootController {
         */
         var res = await Promise
           .all([
-            this.validateAppSecret(pkg.applicationId, pkg.applicationSecret),
+            //this.validateAppSecret(pkg.applicationId, pkg.applicationSecret),
+            true,
             r.table('link_organizations_applications').filter({
-              applicationId: pkg.applicationId,
-              organizationId: pkg.organizationId
+              applicationId,
+              organizationId
             }).limit(1),
             r.table('link_organizations_users').filter({
-              organizationId: pkg.organizationId,
+              organizationId,
               userId: user.id
             }).limit(1),
             /*appModel.getReference({
@@ -162,7 +165,7 @@ export default class AuthController extends RootController {
               userId: user.id
             }),*/
             new PasswordService().verify(pkg.password, user.hash),
-            new TokenService().issue(`${pkg.organizationId}${Date.now()}${user.id}`)
+            new TokenService().issue(`${organizationId}${Date.now()}${user.id}`)
           ])
 
         const app   = res[0]
@@ -171,7 +174,7 @@ export default class AuthController extends RootController {
         auth.login({
           applicationId: app.id,
           email: user.email,
-          organizationId: pkg.organizationId,
+          organizationId,
           //token,
           userId: user.id,
           username: user.username
