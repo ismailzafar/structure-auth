@@ -8,6 +8,7 @@ import r from 'structure-driver'
 import RootController from 'structure-root-controller'
 import RootModel from 'structure-root-model'
 import {sendEmail} from 'structure-emails'
+import ShortIdService from 'structure-short-id-service'
 import TokenService from 'structure-token-service'
 import {resources as userResources} from 'structure-users'
 
@@ -216,20 +217,98 @@ export default class AuthController extends RootController {
 
   }
 
-  passwordResetRequest(req, res) {
+  passwordResetConfirm(req, res) {
 
     const email = req.params.email
+    const newPassword = req.body.newPassword
+    const passwordResetToken = req.body.passwordResetToken
+    const userModel = new UserModel()
 
     return new Promise( async (resolve, reject) => {
 
-      sendEmail({
-        from: process.env.EMAIL_FROM,
-        //to: email,
-        to: 'mail@chrisabrams.com',
-        subject: 'Password Reset Request',
-        text: `You have requested to reset your password. Please click here: .`,
-        html: `You have requested to reset your password. Please click <a href="">here</a>.`
-      })
+      try {
+
+        let user = await userModel.getByEmail(email)
+
+        // If there is no user
+        if(!user) {
+          return reject({
+            code: 'USER_EMAIL_INVALID',
+            message: 'This email could not be found for a user'
+          })
+        }
+
+        // If token is invalid
+        if(user.passwordResetToken != passwordResetToken) {
+          return reject({
+            code: 'USER_PASSWORD_TOKEN_INVALID',
+            message: 'This password reset token is invalid'
+          })
+        }
+
+        // Create new password hash
+        const hash = await new PasswordService().issue(newPassword)
+
+        user = await userModel.updateById(user.id, {
+          hash,
+          passwordResetToken: null // Make sure reset token cannot be used again
+        })
+
+        resolve(user)
+
+      }
+      catch(e) {
+        logger.error(e)
+
+        reject(e)
+      }
+
+    })
+
+  }
+
+  passwordResetRequest(req, res) {
+
+    const email = req.params.email
+    const userModel = new UserModel()
+
+    return new Promise( async (resolve, reject) => {
+
+      try {
+
+        let user = await userModel.getByEmail(email)
+
+        // If there is no user
+        if(!user) {
+          return reject({
+            code: 'USER_EMAIL_INVALID',
+            message: 'This email could not be found for a user'
+          })
+        }
+
+        const passwordResetToken = new ShortIdService().issue(`${email}${Date.now()}`)
+
+        user = await userModel.updateById(user.id, {
+          passwordResetToken
+        })
+
+        /*sendEmail({
+          from: process.env.EMAIL_FROM,
+          //to: email,
+          to: 'mail@chrisabrams.com',
+          subject: 'Password Reset Request',
+          text: `You have requested to reset your password. Please click here: .`,
+          html: `You have requested to reset your password. Please click <a href="">here</a>.`
+        })*/
+
+        resolve(passwordResetToken)
+
+      }
+      catch(e) {
+        logger.error(e)
+
+        reject(e)
+      }
 
     })
 
