@@ -7,7 +7,7 @@ import PasswordService from 'structure-password-service'
 import r from 'structure-driver'
 import RootController from 'structure-root-controller'
 import RootModel from 'structure-root-model'
-import {sendEmail} from 'structure-emails'
+//import {sendEmail} from 'structure-emails'
 import ShortIdService from 'structure-short-id-service'
 import TokenService from 'structure-token-service'
 import {resources as userResources} from 'structure-users'
@@ -142,7 +142,6 @@ export default class AuthController extends RootController {
         3. The application belongs to the organization provided
         4. The user belongs to the organization provided
         5. The password is valid
-        6. Go ahead and generate a login token while the rest of this going on, just in case
         */
         var res = await Promise
           .all([
@@ -165,12 +164,19 @@ export default class AuthController extends RootController {
               organizationId: pkg.organizationId,
               userId: user.id
             }),*/
-            new PasswordService().verify(pkg.password, user.hash),
-            new TokenService().issue(`${organizationId}${Date.now()}${user.id}`)
+            new PasswordService().verify(pkg.password, user.hash)
           ])
 
-        const app   = res[0]
-        const token = res[4]
+        const app = res[0]
+        const passwordIsValid = res[3]
+
+        if(!passwordIsValid) {
+          return reject({
+            code: codes.PASSWORD_MISMATCH,
+            message: 'Password is invalid',
+            resource: 'AuthController'
+          })
+        }
 
         auth.login({
           applicationId: app.id,
@@ -181,7 +187,7 @@ export default class AuthController extends RootController {
           username: user.username
         })
 
-        user.token = token
+        user.token = new TokenService().issue(`${organizationId}${Date.now()}${user.id}`)
 
         resolve(user)
 
