@@ -32,7 +32,7 @@ const createOrgAndApp = async function(){
 
 describe.only('Routes', function() {
 
-  before(function() {
+  /*before(function() {
 
     this.migration = new Migrations({
       db: 'test',
@@ -45,7 +45,7 @@ describe.only('Routes', function() {
 
   afterEach(function() {
     return this.migration.purge()
-  })
+  })*/
 
   it('should not login a user; missing username', async function() {
 
@@ -455,29 +455,38 @@ describe.only('Routes', function() {
 
   })
 
-  it('should request password change', async function() {
+  it.skip('should request password change', async function() {
+    this.timeout(6000)
 
     const {orgId, appId} = await createOrgAndApp()
 
-    var res0 = await server
+    /*var res0 = await server
       .post(`/api/${process.env.API_VERSION}/users`)
       .set('organizationid', orgId)
       .set('applicationid', appId)
       .send({
-        email: 'mail231239@foo.com',
+        email: `mail231239@foo.com`,
         username: 'tom12391355912',
         password: 'gonnacatchyou22'
       })
-    const user = res0.body.pkg
+    const user = res0.body.pkg*/
 
     var res = await server
       .post(`/api/${process.env.API_VERSION}/auth/users/${user.email}/password/reset`)
       .set('organizationid', orgId)
       .set('applicationid', appId)
       .send()
-
+    //console.error('e', res.body, res.error)
     expect(res.body.status).to.equal(201)
     expect(res.body.pkg).to.be.a('string')
+
+    return new Promise( async (resolve, reject) => {
+
+      setTimeout(function() {
+        resolve()
+      }, 5000)
+
+    })
 
   })
 
