@@ -1,4 +1,3 @@
-import logger from 'structure-logger'
 import r from 'structure-driver'
 import RootModel from 'structure-root-model'
 
@@ -132,7 +131,7 @@ export default class AuthModel extends RootModel {
    * @todo Needs work
    */
   authByFacebook(pkg) {
-    console.error('handle args', pkg)
+
     return new Promise( (resolve, reject) => {
 
       r.db(process.env.RETHINK_DB_NAME)

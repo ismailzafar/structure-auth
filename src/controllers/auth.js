@@ -1,7 +1,6 @@
 import codes from '../lib/error-codes'
 import {resources as applicationResources} from 'structure-applications'
 import AuthModel from '../models/auth'
-import logger from 'structure-logger'
 import {resources as organizationResources} from 'structure-organizations'
 import PasswordService from 'structure-password-service'
 import r from 'structure-driver'
@@ -46,9 +45,16 @@ export default class AuthController extends RootController {
    */
   changePassword(req, res) {
 
+    const applicationId = req.headers.applicationid
+    const organizationId = req.headers.organizationid
+
     let pkg = req.body
     const id = req.params.id
-    const userModel = new UserModel()
+    const userModel = new UserModel({
+      applicationId,
+      logger: this.logger,
+      organizationId
+    })
 
     return new Promise( async (resolve, reject) => {
 
@@ -94,7 +100,7 @@ export default class AuthController extends RootController {
         resolve(user)
       }
       catch(e) {
-        logger.error(e)
+        this.logger.error(e)
 
         reject(e)
       }
@@ -113,13 +119,30 @@ export default class AuthController extends RootController {
   login(req, res) {
 
     const applicationId = req.headers.applicationid
-    const appModel = new AppModel()
-    const auth = new AuthModel()
-    let   model = null
     const organizationId = req.headers.organizationid
-    const orgModel = new OrgModel()
+
+    const appModel = new AppModel({
+      applicationId,
+      logger: this.logger,
+      organizationId
+    })
+    const auth = new AuthModel({
+      applicationId,
+      logger: this.logger,
+      organizationId
+    })
+    let   model = null
+    const orgModel = new OrgModel({
+      applicationId,
+      logger: this.logger,
+      organizationId
+    })
     const pkg = req.body
-    const userModel = new UserModel()
+    const userModel = new UserModel({
+      applicationId,
+      logger: this.logger,
+      organizationId
+    })
 
     return new Promise( async (resolve, reject) => {
 
@@ -208,9 +231,9 @@ export default class AuthController extends RootController {
         model = new RootModel({table: 'actions'})
 
         model.create(data)*/
-        logger.error(e)
+        this.logger.error(e)
 
-        logger.debug('Auth: Bad data package')
+        this.logger.debug('Auth: Bad data package')
 
         return reject({
           code: codes.BAD_DATA,
@@ -225,10 +248,17 @@ export default class AuthController extends RootController {
 
   passwordResetConfirm(req, res) {
 
+    const applicationId = req.headers.applicationid
+    const organizationId = req.headers.organizationid
+
     const email = req.params.email
     const newPassword = req.body.newPassword
     const passwordResetToken = req.body.passwordResetToken
-    const userModel = new UserModel()
+    const userModel = new UserModel({
+      applicationId,
+      logger: this.logger,
+      organizationId
+    })
 
     return new Promise( async (resolve, reject) => {
 
@@ -264,7 +294,7 @@ export default class AuthController extends RootController {
 
       }
       catch(e) {
-        logger.error(e)
+        this.logger.error(e)
 
         reject(e)
       }
@@ -275,8 +305,15 @@ export default class AuthController extends RootController {
 
   passwordResetRequest(req, res) {
 
+    const applicationId = req.headers.applicationid
+    const organizationId = req.headers.organizationid
+
     const email = req.params.email
-    const userModel = new UserModel()
+    const userModel = new UserModel({
+      applicationId,
+      logger: this.logger,
+      organizationId
+    })
 
     return new Promise( async (resolve, reject) => {
 
@@ -315,7 +352,7 @@ export default class AuthController extends RootController {
 
       }
       catch(e) {
-        logger.error(e)
+        this.logger.error(e)
 
         reject(e)
       }
@@ -326,7 +363,14 @@ export default class AuthController extends RootController {
 
   validateAppSecret(appId, secret) {
 
-    const appModel = new AppModel()
+    const applicationId = req.headers.applicationid
+    const organizationId = req.headers.organizationid
+
+    const appModel = new AppModel({
+      applicationId,
+      logger: this.logger,
+      organizationId
+    })
 
     return new Promise( async (resolve, reject) => {
 

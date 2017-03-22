@@ -32,7 +32,7 @@ const createOrgAndApp = async function(){
 
 describe.only('Routes', function() {
 
-  /*before(function() {
+  before(function() {
 
     this.migration = new Migrations({
       db: 'test',
@@ -45,7 +45,7 @@ describe.only('Routes', function() {
 
   afterEach(function() {
     return this.migration.purge()
-  })*/
+  })
 
   it('should not login a user; missing username', async function() {
 
