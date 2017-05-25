@@ -6,7 +6,6 @@ import PasswordService from 'structure-password-service'
 import r from 'structure-driver'
 import RootController from 'structure-root-controller'
 import RootModel from 'structure-root-model'
-import {sendEmail} from 'structure-emails'
 import ShortIdService from 'structure-short-id-service'
 import TokenService from 'structure-token-service'
 import {resources as userResources} from 'structure-users'
@@ -335,18 +334,7 @@ export default class AuthController extends RootController {
           passwordResetToken
         })
 
-        if(process.env.EMAIL_DELIVERY && process.env.EMAIL_DELIVERY != 'none') {
-
-          sendEmail({
-            from: process.env.EMAIL_FROM,
-            to: email,
-            //to: 'mail@chrisabrams.com',
-            subject: 'Password Reset Request',
-            text: `You have requested to reset your password. Here is your token: ${passwordResetToken}`,
-            html: `You have requested to reset your password. Here is your token: ${passwordResetToken}.`
-          })
-
-        }
+        req.user = user
 
         resolve(passwordResetToken)
 
