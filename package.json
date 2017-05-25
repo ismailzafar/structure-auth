@@ -1,13 +1,13 @@
 {
   "name": "structure-auth",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Authentication & authorization, cause no one likes to share yet everyone wants to be in charge",
   "main": "dist/index.js",
   "dependencies": {
     "ajv": "^4.11.3",
     "babel-runtime": "^6.23.0",
     "structure-applications": "^0.1.0",
-    "structure-dispatcher": "^0.1.7",
+    "structure-dispatcher": "^0.1.18",
     "structure-driver": "^0.1.1",
     "structure-emails": "^0.1.4",
     "structure-organizations": "^0.1.0",
