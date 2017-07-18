@@ -1,3 +1,4 @@
+import r from 'structure-driver'
 import codes from '../../../src/lib/error-codes'
 import Migrations from 'structure-migrations'
 import MockHTTPServer from '../../helpers/mock-http-server'
@@ -133,9 +134,21 @@ describe('Routes', function() {
         username: 'tom12381355954',
         password: 'gonnacatchyou22'
       })
+    const user = res.body.pkg
 
     expect(res.body.status).to.equal(201)
-    expect(res.body.pkg.username).to.equal('tom12381355954')
+    expect(user.token).to.be.a('string')
+    expect(user.username).to.equal('tom12381355954')
+    expect(user.email).to.equal('mail1238@foo.com')
+
+    const res1 = await r.table('auth_tokens').filter({
+      token: user.token
+    })
+
+    expect(res1.length).to.equal(1)
+    expect(res1[0].token).to.equal(user.token)
+    expect(res1[0].organizationId).to.equal(orgId)
+    expect(res1[0].userId).to.equal(user.id)
 
   })
 
@@ -153,7 +166,7 @@ describe('Routes', function() {
         password: 'gonnacatchyou22'
       })
 
-    var res = await server
+    const res = await server
       .post(`/api/${process.env.API_VERSION}/auth/login`)
       .set('organizationid', orgId)
       .set('applicationid', appId)
@@ -161,9 +174,21 @@ describe('Routes', function() {
         email: 'mail231239@foo.com',
         password: 'gonnacatchyou22'
       })
+    const user = res.body.pkg
 
     expect(res.body.status).to.equal(201)
-    expect(res.body.pkg.username).to.equal('tom12391355912')
+    expect(user.token).to.be.a('string')
+    expect(user.username).to.equal('tom12391355912')
+    expect(user.email).to.equal('mail231239@foo.com')
+
+    const res1 = await r.table('auth_tokens').filter({
+      token: user.token
+    })
+
+    expect(res1.length).to.equal(1)
+    expect(res1[0].token).to.equal(user.token)
+    expect(res1[0].organizationId).to.equal(orgId)
+    expect(res1[0].userId).to.equal(user.id)
 
   })
 

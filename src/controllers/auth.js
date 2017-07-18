@@ -172,16 +172,19 @@ export default class AuthController extends RootController {
           })
         }
 
+        const token = new TokenService()
+          .issue(`${organizationId}.${Date.now()}.${user.id}`)
+
+        user.token = token
+
         auth.login({
           applicationId: app.id,
           email: user.email,
           organizationId,
-          // token,
+          token,
           userId: user.id,
           username: user.username
         })
-
-        user.token = new TokenService().issue(`${organizationId}.${Date.now()}.${user.id}`)
 
         resolve(user)
 

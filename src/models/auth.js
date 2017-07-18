@@ -98,10 +98,16 @@ export default class AuthModel extends RootModel {
       table: 'auth_tokens'
     })
 
+    console.log('saving to auth_tokens', {
+      organizationId: pkg.organizationId,
+      token: pkg.token,
+      userId: pkg.userId,
+    })
+
     return model.create({
       organizationId: pkg.organizationId,
       token: pkg.token,
-      userId: pkg.id
+      userId: pkg.userId
     })
 
   }
