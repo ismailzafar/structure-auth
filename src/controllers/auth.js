@@ -310,4 +310,65 @@ export default class AuthController extends RootController {
 
   }
 
+  /**
+   * Get the 10 most recent user auth tokens. We don't want to send the actual
+   * token itself, however.
+   *
+   * @public
+   * @param {Object} req - Express req
+   * @param {Object} res - Express res
+   */
+  getRecentUserAuthTokens(req, res) {
+
+    const applicationId = req.headers.applicationid
+    const organizationId = req.headers.organizationid
+    const id = req.params.id
+
+    const auth = new AuthModel({
+      applicationId,
+      logger: this.logger,
+      organizationId
+    })
+
+    return auth.getRecentUserAuthTokens(id)
+
+  }
+
+  /**
+   * Wipe all auth tokens for a user
+   *
+   * @public
+   * @param {Object} req - Express req
+   * @param {Object} res - Express res
+   */
+  wipeUserAuthTokens(req, res) {
+
+    const applicationId = req.headers.applicationid
+    const organizationId = req.headers.organizationid
+    const id = req.params.id
+
+    return new Promise( async (resolve, reject) => {
+
+      try {
+        const auth = new AuthModel({
+          applicationId,
+          logger: this.logger,
+          organizationId
+        })
+
+        const deleted = await auth.wipeUserAuthTokens(id)
+
+        resolve({deleted})
+
+      } catch(e) {
+
+        this.logger.error(e)
+        reject(e)
+
+      }
+
+    })
+
+  }
+
 }

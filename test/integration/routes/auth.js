@@ -3,12 +3,13 @@ import codes from '../../../src/lib/error-codes'
 import Migrations from 'structure-migrations'
 import MockHTTPServer from '../../helpers/mock-http-server'
 import pluginsList from '../../helpers/plugins'
+import middleware from '../../helpers/middleware'
 
-const server = new MockHTTPServer()
+const server = new MockHTTPServer(middleware)
 
 const createOrgAndApp = async function() {
   // getting an organization and application Ids
-  var res0 = await new MockHTTPServer()
+  var res0 = await server
     .post(`/api/${process.env.API_VERSION}/organizations`)
     .send({
       title: 'work it'
@@ -17,7 +18,7 @@ const createOrgAndApp = async function() {
   const org = res0.body.pkg
   const orgId = org.id
 
-  var app = await new MockHTTPServer()
+  var app = await server
     .post(`/api/${process.env.API_VERSION}/applications`)
     .set('organizationid', orgId)
     .send({
@@ -512,6 +513,123 @@ describe('Routes', function() {
 
     expect(res.body.status).to.equal(201)
     expect(res.body.pkg).to.be.an('object')
+
+  })
+
+  it('should get 10 most recent token timestamps for a user', async function() {
+
+    const {orgId, appId} = await createOrgAndApp()
+
+    const res = await server
+      .post(`/api/${process.env.API_VERSION}/users`)
+      .set('organizationid', orgId)
+      .set('applicationid', appId)
+      .send({
+        email: 'mail1238@foo.com',
+        username: 'tom12381355954',
+        password: 'gonnacatchyou22'
+      })
+    const user = res.body.pkg
+
+    async function login() {
+      await server
+        .post(`/api/${process.env.API_VERSION}/auth/login`)
+        .set('organizationid', orgId)
+        .set('applicationid', appId)
+        .send({
+          username: 'tom12381355954',
+          password: 'gonnacatchyou22'
+        })
+    }
+
+    for (let i = 0; i < 11; i++) {
+      await login()
+    }
+
+    const res2 = await server
+      .get(`/api/${process.env.API_VERSION}/auth/users/${user.id}/tokens`)
+      .set('organizationid', orgId)
+      .set('applicationid', appId)
+
+    expect(res2.body.status).to.equal(200)
+    expect(res2.body.pkg.length).to.equal(10)
+
+  })
+
+  it('should return deleted 0 when wiping for user with no tokens', async function() {
+
+    const {orgId, appId} = await createOrgAndApp()
+
+    const res4 = await server
+      .delete(`/api/${process.env.API_VERSION}/auth/users/12345/tokens`)
+      .set('organizationid', orgId)
+      .set('applicationid', appId)
+
+    expect(res4.body.status).to.equal(200)
+    expect(res4.body.pkg.deleted).to.equal(0)
+
+  })
+
+  it('should wipe auth tokens for a specific user', async function() {
+
+    const {orgId, appId} = await createOrgAndApp()
+
+    await server
+      .post(`/api/${process.env.API_VERSION}/users`)
+      .set('organizationid', orgId)
+      .set('applicationid', appId)
+      .send({
+        email: 'test1@example.com',
+        username: 'test1',
+        password: 'password1'
+      })
+
+    const res1 = await server
+      .post(`/api/${process.env.API_VERSION}/auth/login`)
+      .set('organizationid', orgId)
+      .set('applicationid', appId)
+      .send({
+        username: 'test1',
+        password: 'password1'
+      })
+    const user1 = res1.body.pkg
+
+    await server
+      .post(`/api/${process.env.API_VERSION}/users`)
+      .set('organizationid', orgId)
+      .set('applicationid', appId)
+      .send({
+        email: 'test2@example.com',
+        username: 'test2',
+        password: 'password2'
+      })
+
+    const res2 = await server
+      .post(`/api/${process.env.API_VERSION}/auth/login`)
+      .set('organizationid', orgId)
+      .set('applicationid', appId)
+      .send({
+        username: 'test2',
+        password: 'password2'
+      })
+    const user2 = res2.body.pkg
+
+    const res3 = await r.table('auth_tokens')
+
+    expect(res3.length).to.equal(2)
+
+    const res4 = await server
+      .delete(`/api/${process.env.API_VERSION}/auth/users/${user1.id}/tokens`)
+      .set('organizationid', orgId)
+      .set('applicationid', appId)
+
+    expect(res4.body.status).to.equal(200)
+    expect(res4.body.pkg.deleted).to.equal(1)
+
+    const res5 = await r.table('auth_tokens')
+
+    expect(res5.length).to.equal(1)
+    expect(res5[0].token).to.equal(user2.token)
 
   })
 

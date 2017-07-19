@@ -18,7 +18,11 @@ process.on('unhandledRejection', function(err) {
 
 })
 
-require('babel-core/register')
+// Babel by default ignores everything in node_modules - we need to explicitly
+// compile test suites from dependencies so we can import their test APIs
+require("babel-core/register")({
+  ignore: /node_modules\/(?!structure-\S+\/test)/
+})
 
 var path = require('path')
 require('dotenv').config({path: path.join(__dirname, '../.env')})

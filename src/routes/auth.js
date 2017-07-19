@@ -13,6 +13,8 @@ routes.post(`/login`,                               schemaLogin,          dispat
 routes.post('/users/:email/password/reset/confirm', schemaResetPassword,  dispatch(controller, 'passwordResetConfirm'))
 routes.post('/users/:email/password/reset',                               dispatch(controller, 'passwordResetRequest'))
 routes.patch('/users/:id/password',                 schemaChangePassword, dispatch(controller, 'changePassword'))
+routes.get('/users/:id/tokens',                                           dispatch(controller, 'getRecentUserAuthTokens'))
+routes.delete('/users/:id/tokens',                                        dispatch(controller, 'wipeUserAuthTokens'))
 
 export default function routeInterface(props = {}) {
 

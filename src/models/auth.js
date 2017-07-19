@@ -65,28 +65,34 @@ export default class AuthModel extends RootModel {
   }
 
   /**
-   * Determine if user auth token matches assignment
+   * Determine if user auth token is valid
    *
    * @public
-   * @param {Object} pkg - Data
+   * @param {String} organizationId - ID of organization token exists on
+   * @param {String} token - token to be validated
+   * @returns {Boolean} - whether or not the token is valid
    */
-  matchAuthToken(pkg = {}) {
+  matchAuthToken(organizationId, token) {
 
     return new Promise( async (resolve, reject) => {
 
-      const matches = await r.table('auth_tokens').filter({
-        organizationId: pkg.organizationId,
-        token: pkg.token,
-        userId: pkg.userId
-      }).limit(1)
-
-      if(!matches || matches.length == 0) {
-        return reject({
-          message: 'Auth token does not match user'
-        })
+      if (!token) {
+        return resolve(false)
       }
 
-      return resolve(true)
+      const matches = await r
+        .table('auth_tokens')
+        .filter({
+          organizationId: organizationId,
+          token: token
+        })
+        .limit(1)
+
+      if(!matches || matches.length === 0) {
+        return resolve(false)
+      }
+
+      resolve(true)
 
     })
 
@@ -96,12 +102,6 @@ export default class AuthModel extends RootModel {
 
     let model = new RootModel({
       table: 'auth_tokens'
-    })
-
-    console.log('saving to auth_tokens', {
-      organizationId: pkg.organizationId,
-      token: pkg.token,
-      userId: pkg.userId,
     })
 
     return model.create({
@@ -125,6 +125,52 @@ export default class AuthModel extends RootModel {
       organizationId: pkg.organizationId,
       userId: pkg.id,
       username: pkg.username
+    })
+
+  }
+
+  /**
+   * Wipe all auth tokens for a user
+   *
+   * @public
+   * @param {String} userId - ID of user to wipe tokens of
+   * @param {String} token - token to be validated
+   * @returns {Number} - number of tokens removed
+   */
+  wipeUserAuthTokens(userId) {
+
+    return new Promise( async (resolve, reject) => {
+
+      const res = await r
+        .table('auth_tokens')
+        .filter({userId})
+        .delete()
+
+      resolve(res.deleted)
+
+    })
+
+  }
+
+  /**
+   * Get 10 most recent user auth tokens
+   *
+   * @public
+   * @param {String} userId - ID of user to get tokens of
+   * @returns {Array.Object} - up to 10 most recent user auth tokens
+   */
+  getRecentUserAuthTokens(userId) {
+
+    return new Promise( async (resolve, reject) => {
+
+      const res = await r
+        .table('auth_tokens')
+        .filter({userId})
+        .orderBy(r.desc('createdAt'))
+        .limit(10)
+
+      resolve(res)
+
     })
 
   }

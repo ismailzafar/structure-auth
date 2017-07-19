@@ -22,7 +22,8 @@ gulp.task('mocha', function(done) {
   gulp
     .src([
       './test/setup.js',
-      './test/integration/routes/**.js'
+      './test/integration/routes/**.js',
+      './test/integration/middleware/**.js'
     ], {read: false})
     .pipe(mocha({reporter: 'spec'}))
     .on('end', function () {

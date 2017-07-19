@@ -2,6 +2,7 @@ import Controller from './controllers/auth'
 import migrations from './migrations/auth'
 import Model from './models/auth'
 import routes from './routes/auth'
+import authenticateAuthToken from './middleware/auth-token'
 
 export default function pluginInterface(options = {}) {
 
@@ -25,3 +26,4 @@ const settings = {
 
 export {resources}
 export {settings}
+export {authenticateAuthToken}
