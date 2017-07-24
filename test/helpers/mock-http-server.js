@@ -1,4 +1,3 @@
-import middleware from './middleware'
 import pluginsInteface from 'structure-plugins'
 import pluginsList from './plugins'
 import request from 'supertest'
@@ -9,7 +8,7 @@ const plugins = pluginsInteface({
   list: pluginsList
 })
 
-function MockHTTPServer(options = {}) {
+function MockHTTPServer(middleware, options = {}) {
 
   const api = new Server({
     router: new Router({

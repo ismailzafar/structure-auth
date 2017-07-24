@@ -1,18 +1,11 @@
 import codes from '../lib/error-codes'
-import {resources as applicationResources} from 'structure-applications'
 import AuthModel from '../models/auth'
-import {resources as organizationResources} from 'structure-organizations'
 import PasswordService from 'structure-password-service'
 import r from 'structure-driver'
 import RootController from 'structure-root-controller'
-import RootModel from 'structure-root-model'
 import ShortIdService from 'structure-short-id-service'
 import TokenService from 'structure-token-service'
-import {resources as userResources} from 'structure-users'
-
-const AppModel = applicationResources.models.Application
-const OrgModel = organizationResources.models.Organization
-const UserModel = userResources.models.User
+import {UserModel} from 'structure-users'
 
 /**
  * AuthController Class
@@ -97,11 +90,12 @@ export default class AuthController extends RootController {
         user = user = await this.login(reqWithNewPassword, res)
 
         resolve(user)
-      }
-      catch(e) {
-        this.logger.error(e)
 
+      } catch(e) {
+
+        this.logger.error(e)
         reject(e)
+
       }
 
     })
@@ -120,18 +114,7 @@ export default class AuthController extends RootController {
     const applicationId = req.headers.applicationid
     const organizationId = req.headers.organizationid
 
-    const appModel = new AppModel({
-      applicationId,
-      logger: this.logger,
-      organizationId
-    })
     const auth = new AuthModel({
-      applicationId,
-      logger: this.logger,
-      organizationId
-    })
-    let   model = null
-    const orgModel = new OrgModel({
       applicationId,
       logger: this.logger,
       organizationId
@@ -160,14 +143,12 @@ export default class AuthController extends RootController {
         be able to log into any application in which the user and the app are linked.
 
         1. The organization exists and is valid
-        2. The application exists and secret is valid
-        3. The application belongs to the organization provided
-        4. The user belongs to the organization provided
-        5. The password is valid
+        2. The application belongs to the organization provided
+        3. The user belongs to the organization provided
+        4. The password is valid
         */
         var res = await Promise
           .all([
-            //this.validateAppSecret(pkg.applicationId, pkg.applicationSecret),
             true,
             r.table('link_organizations_applications').filter({
               applicationId,
@@ -177,15 +158,6 @@ export default class AuthController extends RootController {
               organizationId,
               userId: user.id
             }).limit(1),
-            /*appModel.getReference({
-              applicationId: pkg.applicationId,
-              organizationId: pkg.organizationId
-            }),
-            auth.getReference({
-              node: 'users',
-              organizationId: pkg.organizationId,
-              userId: user.id
-            }),*/
             new PasswordService().verify(pkg.password, user.hash)
           ])
 
@@ -200,36 +172,24 @@ export default class AuthController extends RootController {
           })
         }
 
+        const token = new TokenService()
+          .issue(`${organizationId}.${Date.now()}.${user.id}`)
+
+        user.token = token
+
         auth.login({
           applicationId: app.id,
           email: user.email,
           organizationId,
-          //token,
+          token,
           userId: user.id,
           username: user.username
         })
 
-        user.token = new TokenService().issue(`${organizationId}${Date.now()}${user.id}`)
-
         resolve(user)
 
-      }
-      catch(e) {
+      } catch(e) {
 
-        /*const data = {
-          applicationId: pkg.applicationId,
-          authenticated: false,
-          email: pkg.email,
-          err: 'BAD_DATA',
-          organizationId: pkg.organizationId,
-          //password: pkg.password,
-          userId: user.id,
-          username: pkg.username
-        }
-
-        model = new RootModel({table: 'actions'})
-
-        model.create(data)*/
         this.logger.error(e)
 
         this.logger.debug('Auth: Bad data package')
@@ -239,6 +199,7 @@ export default class AuthController extends RootController {
           message: 'Bad data package',
           resource: 'AuthController'
         })
+
       }
 
     })
@@ -274,7 +235,7 @@ export default class AuthController extends RootController {
         }
 
         // If token is invalid
-        if(user.passwordResetToken != passwordResetToken) {
+        if(user.passwordResetToken !== passwordResetToken) {
           return reject({
             code: 'USER_PASSWORD_TOKEN_INVALID',
             message: 'This password reset token is invalid'
@@ -291,11 +252,11 @@ export default class AuthController extends RootController {
 
         resolve(user)
 
-      }
-      catch(e) {
-        this.logger.error(e)
+      } catch(e) {
 
+        this.logger.error(e)
         reject(e)
+
       }
 
     })
@@ -338,54 +299,72 @@ export default class AuthController extends RootController {
 
         resolve(passwordResetToken)
 
-      }
-      catch(e) {
-        this.logger.error(e)
+      } catch(e) {
 
+        this.logger.error(e)
         reject(e)
+
       }
 
     })
 
   }
 
-  validateAppSecret(appId, secret) {
+  /**
+   * Get the 10 most recent user auth tokens. We don't want to send the actual
+   * token itself, however.
+   *
+   * @public
+   * @param {Object} req - Express req
+   * @param {Object} res - Express res
+   */
+  getRecentUserAuthTokens(req, res) {
 
     const applicationId = req.headers.applicationid
     const organizationId = req.headers.organizationid
+    const id = req.params.id
 
-    const appModel = new AppModel({
+    const auth = new AuthModel({
       applicationId,
       logger: this.logger,
       organizationId
     })
 
+    return auth.getRecentUserAuthTokens(id)
+
+  }
+
+  /**
+   * Wipe all auth tokens for a user
+   *
+   * @public
+   * @param {Object} req - Express req
+   * @param {Object} res - Express res
+   */
+  wipeUserAuthTokens(req, res) {
+
+    const applicationId = req.headers.applicationid
+    const organizationId = req.headers.organizationid
+    const id = req.params.id
+
     return new Promise( async (resolve, reject) => {
 
-      if(!secret) {
-        return reject({
-          code: codes.BAD_APPLICATION,
-          message: 'App not found'
-        })
-      }
-
       try {
-        var app = await appModel.getById(appId)
-
-        if(app.secret != secret) {
-          reject({
-            code: codes.BAD_APPLICATION,
-            message: 'App invalid'
-          })
-        }
-
-        resolve(true)
-      }
-      catch(e) {
-        reject({
-          code: codes.BAD_APPLICATION,
-          message: 'App not found'
+        const auth = new AuthModel({
+          applicationId,
+          logger: this.logger,
+          organizationId
         })
+
+        const deleted = await auth.wipeUserAuthTokens(id)
+
+        resolve({deleted})
+
+      } catch(e) {
+
+        this.logger.error(e)
+        reject(e)
+
       }
 
     })

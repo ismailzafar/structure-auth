@@ -1,6 +1,6 @@
 {
   "name": "structure-auth",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Authentication & authorization, cause no one likes to share yet everyone wants to be in charge",
   "main": "dist/index.js",
   "dependencies": {
@@ -16,7 +16,8 @@
     "structure-root-model": "^0.1.11",
     "structure-short-id-service": "^0.1.0",
     "structure-token-service": "^0.1.0",
-    "structure-users": "^0.1.3"
+    "structure-users": "^0.1.8",
+    "structure-validation-schema-middleware": "^0.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",
@@ -27,6 +28,7 @@
     "chai": "^3.5.0",
     "dotenv": "^4.0.0",
     "eslint": "^3.16.1",
+    "eslint-config-structure": "^0.1.2",
     "expect": "^1.20.2",
     "express": "^4.15.0",
     "forever": "^0.15.3",
@@ -37,7 +39,7 @@
     "reqlite": "^2.3.0",
     "sinon": "^1.17.7",
     "sinon-chai": "^2.8.0",
-    "structure-auth-entity": "^0.1.0",
+    "structure-auth-entity": "^0.1.2",
     "structure-middleware": "^0.1.0",
     "structure-migrations": "^0.1.1",
     "structure-plugins": "^0.1.0",
