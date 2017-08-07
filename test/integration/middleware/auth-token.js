@@ -80,6 +80,20 @@ describe('Auth Token Middleware', function() {
 
   })
 
+  it('shouldnt need auth for /sync', async function(done) {
+
+    const req = {
+      headers: {},
+      originalUrl: '/api/0.1/sync'
+    }
+
+    authenticateAuthToken(req, {}, function(error) {
+      expect(error).to.equal(undefined)
+      done()
+    })
+
+  })
+
   it('shouldnt need auth for /auth/login', async function(done) {
 
     const req = {

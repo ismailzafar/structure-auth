@@ -7,6 +7,7 @@ const errorComposer = new StructureComposeError(errorCodes)
 const apiRoot = `/api/${process.env.API_VERSION}`
 const whitelistedRoutes = [
   `${apiRoot}$`,
+  `${apiRoot}/sync`,
   `${apiRoot}/auth/login$`,
   `${apiRoot}/auth/users/.*/password/reset`
 ]
