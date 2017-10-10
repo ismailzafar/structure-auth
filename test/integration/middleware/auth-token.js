@@ -182,19 +182,19 @@ describe('Auth Token Middleware', function() {
     })()
   })
 
-  it('should pass with good token', function(done) {
+  it('should pass with good authtoken', function(done) {
     (async () => {
       const res = await testApi.login(this.orgId, this.appId, {
         email: 'testuser1@mail.com',
         password: 'foo88'
       })
-      const token = res.body.pkg.token
+      const authtoken = res.body.pkg.authtoken
 
       const req = {
         headers: {
           organizationid: this.orgId,
           applicationid: this.appId,
-          authtoken: token
+          authtoken
         },
         originalUrl: '/api/0.1/users'
       }

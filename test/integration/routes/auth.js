@@ -138,16 +138,16 @@ describe('Routes', function() {
     const user = res.body.pkg
 
     expect(res.body.status).to.equal(201)
-    expect(user.token).to.be.a('string')
+    expect(user.authtoken).to.be.a('string')
     expect(user.username).to.equal('tom12381355954')
     expect(user.email).to.equal('mail1238@foo.com')
 
     const res1 = await r.table('auth_tokens').filter({
-      token: user.token
+      token: user.authtoken
     })
 
     expect(res1.length).to.equal(1)
-    expect(res1[0].token).to.equal(user.token)
+    expect(res1[0].token).to.equal(user.authtoken)
     expect(res1[0].organizationId).to.equal(orgId)
     expect(res1[0].userId).to.equal(user.id)
 
@@ -178,16 +178,16 @@ describe('Routes', function() {
     const user = res.body.pkg
 
     expect(res.body.status).to.equal(201)
-    expect(user.token).to.be.a('string')
+    expect(user.authtoken).to.be.a('string')
     expect(user.username).to.equal('tom12391355912')
     expect(user.email).to.equal('mail231239@foo.com')
 
     const res1 = await r.table('auth_tokens').filter({
-      token: user.token
+      token: user.authtoken
     })
 
     expect(res1.length).to.equal(1)
-    expect(res1[0].token).to.equal(user.token)
+    expect(res1[0].token).to.equal(user.authtoken)
     expect(res1[0].organizationId).to.equal(orgId)
     expect(res1[0].userId).to.equal(user.id)
 
@@ -629,7 +629,7 @@ describe('Routes', function() {
     const res5 = await r.table('auth_tokens')
 
     expect(res5.length).to.equal(1)
-    expect(res5[0].token).to.equal(user2.token)
+    expect(res5[0].token).to.equal(user2.authtoken)
 
   })
 
