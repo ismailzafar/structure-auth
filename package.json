@@ -1,6 +1,6 @@
 {
   "name": "structure-auth",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Authentication & authorization, cause no one likes to share yet everyone wants to be in charge",
   "main": "dist/index.js",
   "dependencies": {
@@ -16,7 +16,7 @@
     "structure-root-model": "^0.1.11",
     "structure-short-id-service": "^0.1.0",
     "structure-token-service": "^0.1.0",
-    "structure-users": "^0.1.8",
+    "structure-users": "^0.4.1",
     "structure-validation-schema-middleware": "^0.3.0"
   },
   "devDependencies": {
