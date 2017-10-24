@@ -50,7 +50,7 @@ export default async function authenticateAuthToken(req, res, next) {
         organizationId
       })
 
-      const valid = await auth.matchAuthToken(organizationId, token)
+      const valid = await auth.matchAuthToken(token)
 
       if (!valid) {
 

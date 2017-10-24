@@ -148,7 +148,6 @@ describe('Routes', function() {
 
     expect(res1.length).to.equal(1)
     expect(res1[0].token).to.equal(user.authtoken)
-    expect(res1[0].organizationId).to.equal(orgId)
     expect(res1[0].userId).to.equal(user.id)
 
   })
@@ -188,7 +187,6 @@ describe('Routes', function() {
 
     expect(res1.length).to.equal(1)
     expect(res1[0].token).to.equal(user.authtoken)
-    expect(res1[0].organizationId).to.equal(orgId)
     expect(res1[0].userId).to.equal(user.id)
 
   })

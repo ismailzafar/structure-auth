@@ -68,11 +68,10 @@ export default class AuthModel extends RootModel {
    * Determine if user auth token is valid
    *
    * @public
-   * @param {String} organizationId - ID of organization token exists on
    * @param {String} token - token to be validated
    * @returns {Boolean} - whether or not the token is valid
    */
-  matchAuthToken(organizationId, token) {
+  matchAuthToken(token) {
 
     return new Promise( async (resolve, reject) => {
 
@@ -83,7 +82,6 @@ export default class AuthModel extends RootModel {
       const matches = await r
         .table('auth_tokens')
         .filter({
-          organizationId: organizationId,
           token: token
         })
         .limit(1)
@@ -105,7 +103,6 @@ export default class AuthModel extends RootModel {
     })
 
     return model.create({
-      organizationId: pkg.organizationId,
       token: pkg.token,
       userId: pkg.userId
     })
