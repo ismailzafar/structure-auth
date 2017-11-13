@@ -40,6 +40,7 @@
     "sinon": "^1.17.7",
     "sinon-chai": "^2.8.0",
     "structure-auth-entity": "^0.1.2",
+    "structure-groups": "^0.1.0",
     "structure-middleware": "^0.1.0",
     "structure-migrations": "^0.1.1",
     "structure-plugins": "^0.1.0",
