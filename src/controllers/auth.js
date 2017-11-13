@@ -177,7 +177,7 @@ export default class AuthController extends RootController {
 
         user.authtoken = authtoken
 
-        auth.login({
+        await auth.login({
           applicationId: app.id,
           email: user.email,
           organizationId,

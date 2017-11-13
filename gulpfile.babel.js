@@ -27,12 +27,11 @@ gulp.task('mocha', function(done) {
     ], {read: false})
     .pipe(mocha({reporter: 'spec'}))
     .on('end', function () {
-
       process.exit()
-
     })
     .on('error', function (e) {
       console.error(e)
+      process.exit(1)
     })
 
 })
