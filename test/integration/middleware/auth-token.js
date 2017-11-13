@@ -1,3 +1,4 @@
+import r from 'structure-driver'
 import Migrations from 'structure-migrations'
 import {errors, respond} from 'structure-dispatcher'
 import {plugins} from 'structure-middleware'
@@ -206,5 +207,52 @@ describe('Auth Token Middleware', function() {
 
     })()
   })
+
+  it('should fail with bad app secret', function(done) {
+    (async () => {
+
+      const req = {
+        headers: {
+          organizationid: this.orgId,
+          applicationid: this.appId,
+          applicationsecret: 'abcde'
+        },
+        originalUrl: '/api/0.1/users'
+      }
+
+      authenticateAuthToken(req, {}, function(error) {
+        expect(error.code).to.equal('AUTHENTICATION_FAILED')
+        done()
+      })
+
+    })()
+  })
+
+  it('should pass with good app secret', function(done) {
+    (async () => {
+
+      const appSecretRes = await r
+        .table('application_secrets')
+        .getAll(this.appId, {index: 'applicationId'})
+        .limit(1)
+      const appSecret = appSecretRes[0].secret
+
+      const req = {
+        headers: {
+          organizationid: this.orgId,
+          applicationid: this.appId,
+          applicationsecret: appSecret
+        },
+        originalUrl: '/api/0.1/users'
+      }
+
+      authenticateAuthToken(req, {}, function(error) {
+        expect(error).to.equal(undefined)
+        done()
+      })
+
+    })()
+  })
+
 
 })
