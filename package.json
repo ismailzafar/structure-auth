@@ -1,6 +1,6 @@
 {
   "name": "structure-auth",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Authentication & authorization, cause no one likes to share yet everyone wants to be in charge",
   "main": "dist/index.js",
   "dependencies": {
