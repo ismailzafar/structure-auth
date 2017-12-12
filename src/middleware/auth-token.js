@@ -7,19 +7,25 @@ const errorComposer = new StructureComposeError(errorCodes)
 
 const apiRoot = `/api/${process.env.API_VERSION}`
 const whitelistedRoutes = [
-  `${apiRoot}$`,
-  `${apiRoot}/sync`,
-  `${apiRoot}/auth/login$`,
-  `${apiRoot}/auth/users/.*/password/reset`
+  ['GET', `${apiRoot}$`],
+  ['POST', `${apiRoot}/sync`],
+  ['POST', `${apiRoot}/auth/login$`],
+  ['POST', `${apiRoot}/auth/users/.*/password/reset`],
+  ['GET', `${apiRoot}/users/existence/.*$`],
+  ['POST', `${apiRoot}/users$`]
 ]
 
-function isWhiteListedUrl(url) {
+function isWhiteListedUrl(req) {
 
   for (const route of whitelistedRoutes) {
 
-    const re = new RegExp(route)
+    if (route[0] !== req.method) {
+      continue
+    }
 
-    if (re.test(url)) {
+    const re = new RegExp(route[1])
+
+    if (re.test(req.originalUrl)) {
       return true
     }
 
@@ -73,7 +79,7 @@ export default async function authenticateAuthToken(req, res, next) {
 
     try {
 
-      if (isWhiteListedUrl(req.originalUrl)) {
+      if (isWhiteListedUrl(req)) {
         return next()
       }
 

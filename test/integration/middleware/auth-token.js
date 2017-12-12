@@ -71,6 +71,7 @@ describe('Auth Token Middleware', function() {
 
     const req = {
       headers: {},
+      method: 'GET',
       originalUrl: '/api/0.1'
     }
 
@@ -85,6 +86,7 @@ describe('Auth Token Middleware', function() {
 
     const req = {
       headers: {},
+      method: 'POST',
       originalUrl: '/api/0.1/sync'
     }
 
@@ -99,7 +101,38 @@ describe('Auth Token Middleware', function() {
 
     const req = {
       headers: {},
+      method: 'POST',
       originalUrl: '/api/0.1/auth/login'
+    }
+
+    authenticateAuthToken(req, {}, function(error) {
+      expect(error).to.equal(undefined)
+      done()
+    })
+
+  })
+
+  it('shouldnt need auth for /users/existence/username/tom GET', async function(done) {
+
+    const req = {
+      headers: {},
+      method: 'GET',
+      originalUrl: '/api/0.1/users/existence/username/tom'
+    }
+
+    authenticateAuthToken(req, {}, function(error) {
+      expect(error).to.equal(undefined)
+      done()
+    })
+
+  })
+
+  it('shouldnt need auth for /users POST', async function(done) {
+
+    const req = {
+      headers: {},
+      method: 'POST',
+      originalUrl: '/api/0.1/users'
     }
 
     authenticateAuthToken(req, {}, function(error) {
@@ -113,6 +146,7 @@ describe('Auth Token Middleware', function() {
 
     const req = {
       headers: {},
+      method: 'POST',
       originalUrl: '/api/0.1/auth/users/fake@example.com/password/reset'
     }
 
@@ -127,6 +161,7 @@ describe('Auth Token Middleware', function() {
 
     const req = {
       headers: {},
+      method: 'POST',
       originalUrl: '/api/0.1/auth/users/fake@example.com/password/reset/confirm'
     }
 
